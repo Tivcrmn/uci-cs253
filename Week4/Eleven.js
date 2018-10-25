@@ -8,7 +8,6 @@ const transform = require('./helper').transform
 let DataStorageManager = class {
     constructor() {
         this._data
-        this._wordsDcit = []
     }
     
     dispatch(message) {
@@ -20,15 +19,17 @@ let DataStorageManager = class {
     _init(path_to_file) {
         this._data = fs.readFileSync(path_to_file, 'utf8')
         this._data = this._data.replace(/[^a-zA-Z]/g," ")  
+        let words = this._data.split(" ")
+        let wordsDcit = []
+        for (let i = 0; i < words.length; i++) {
+            let w = transform(words[i])
+            if (w.length > 1) wordsDcit.push(w)
+        }
+        this._data = wordsDcit
     }
     
     _words() {
-        let words = this._data.split(" ")
-        for (let i = 0; i < words.length; i++) {
-            let w = transform(words[i])
-            if (w.length > 1) this._wordsDcit.push(w)
-        }
-        return this._wordsDcit
+        return this._data
     }
 }
 
@@ -85,6 +86,7 @@ let WordFrequencyManager = class {
         return res
     }
 }
+
 let WordFrequencyController = class {
     constructor() {
         this._storage_manager
