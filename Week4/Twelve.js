@@ -5,43 +5,43 @@ arguments = process.argv.splice(2)
 // To make the code more readable, I keep it outside.
 const transform = require('./helper').transform
 
-const extract_words = obj => {
+const extract_words = me => {
     return path_to_file => {
-        obj._data = fs.readFileSync(path_to_file, 'utf8')
-        obj._data = obj._data.replace(/[^a-zA-Z]/g," ")  
-        let words = obj._data.split(" ")
+        me['_data'] = fs.readFileSync(path_to_file, 'utf8')
+        me['_data'] = me['_data'].replace(/[^a-zA-Z]/g," ")  
+        let words = me['_data'].split(" ")
         let wordsDcit = []
         for (let i = 0; i < words.length; i++) {
             let w = transform(words[i])
             if (w.length > 1) wordsDcit.push(w)
         }
-        obj._data = wordsDcit 
+        me['_data'] = wordsDcit 
     }
 }
 
-const load_stop_words = obj => {
+const load_stop_words = me => {
     let stop_words = fs.readFileSync('../stop_words.txt', 'utf8')
     stop_words = stop_words.split(",")
     for (let i = 0; i < stop_words.length; i++) {
-        obj['_stop_words_set'].add(stop_words[i])
+        me['_stop_words_set'].add(stop_words[i])
     }
 }
 
-const is_stop_word = obj => {
-    return w => obj._stop_words_set.has(w)
+const is_stop_word = me => {
+    return w => me['_stop_words_set'].has(w)
 }
 
-const increment_count = obj => {
+const increment_count = me => {
     return w => {
-        if (!obj._word_freqs.has(w)) obj._word_freqs.set(w, 1)
-        else obj._word_freqs.set(w, obj._word_freqs.get(w) + 1)
+        if (!me['_word_freqs'].has(w)) me['_word_freqs'].set(w, 1)
+        else me['_word_freqs'].set(w, me['_word_freqs'].get(w) + 1)
     }
 }
 
-const sorted = obj => {
+const sorted = me => {
     let res = []
     let i = 0
-    obj._word_freqs.forEach((val, key) => {
+    me['_word_freqs'].forEach((val, key) => {
         res[i] = {key, val}
         i++
     })
@@ -51,8 +51,8 @@ const sorted = obj => {
     return res
 }
 
-const top25 = obj => {
-    let word_freqs = obj['sorted'](obj)
+const top25 = me => {
+    let word_freqs = me['sorted'](me)
     for (let i = 0; i < 25; i++) {
         let w = word_freqs[i]
         console.log(w.key + "  -  " + w.val)
