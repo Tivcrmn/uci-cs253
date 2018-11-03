@@ -112,6 +112,7 @@ let WordFrequencyCounter = class {
             let w = res[i]
             console.log(w.key + "  -  " + w.val)
         }
+        this._event_manager.publish(['printz', res])
     }
 }
 
@@ -133,6 +134,22 @@ let WordFrequencyApplication = class {
     }
 }
 
+let printNonStopWordWithZ = class {
+    constructor(event_manager) {
+        this._event_manager = event_manager
+        event_manager.subscribe('printz', this.printz.bind(this))
+    }
+    
+    printz(event) {
+        let word_dict = event[1]
+        let count = 0
+        for (let i = 0; i < word_dict.length; i++) {
+            let pair = word_dict[i]
+            if (pair.key.indexOf('z') != -1) count++;
+        }
+        console.log('\n', "the number of non-stop words(without duplicates) with the letter z is", count, '\n')
+    }
+}
 
 
 // The main function
@@ -140,6 +157,8 @@ let WordFrequencyApplication = class {
 let em = new EventManager()
 let ds = new DataStorage(em)
 let sw = new StopWordFilter(em)
+// new added class for print the number of non-stop words(without duplicates) with the letter z
+let pz = new printNonStopWordWithZ(em)
 let wfc = new WordFrequencyCounter(em)
 let wfa = new WordFrequencyApplication(em)
 em.publish(['run', arguments[0]])

@@ -22,7 +22,6 @@ let TFQuarantine = class {
             let func = this._func[i]
             value = func(guard_callable(value))
         }
-        console.log(guard_callable(value))
     }
 }
 
@@ -96,10 +95,8 @@ function top25_freqs(word_freqs) {
     let top25 = ""
     for (let i = 0; i < 25; i++) {
         let w = word_freqs[i]
-        top25 += w.key + "  -  " + w.val
-        if (i < 24) top25 += '\n'
+        console.log(w.key + "  -  " + w.val)
     }
-    return top25
 }
 
 
