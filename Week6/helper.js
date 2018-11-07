@@ -28,6 +28,9 @@ const transform = word => {
     return ans
 }
 
+const isalnum = c => c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+
 module.exports = {
-    transform : transform
+    transform : transform,
+    isalnum : isalnum
 }
