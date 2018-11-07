@@ -4,29 +4,37 @@ arguments = process.argv.splice(2)
 
 const isalnum = require('./helper').isalnum
 
-function* characters(filename) {
+function* lines(filename) {
     let data = fs.readFileSync(filename, 'utf8')
-    data = data.replace(/[^a-zA-Z]/g," ")
-    for (let i = 0; i < data.length; i++) {
-        yield data.charAt(i)
+    let lines = data.split("\r\n")
+    for (let i = 0; i < lines.length; i++) {
+        yield lines[i]
+    }
+}
+
+function* characters(line) {
+    for (let i = 0; i < line.length; i++) {
+        yield line.charAt(i)
     }
 }
 
 function* all_words(filename) {
     start_char = true
     word = ""
-    for (let c of characters(filename)) {
-        if (start_char) {
-            if (isalnum(c)) {
-                word = c.toLowerCase()
-                start_char = false
-            }
-        } else {
-            if (isalnum(c)) {
-                word += c.toLowerCase()
+    for (let line of lines(filename)) {
+        for (let c of characters(line)) {
+            if (start_char) {
+                if (isalnum(c)) {
+                    word = c.toLowerCase()
+                    start_char = false
+                }
             } else {
-                start_char = true
-                yield word
+                if (isalnum(c)) {
+                    word += c.toLowerCase()
+                } else {
+                    start_char = true
+                    yield word
+                }
             }
         }
     }
