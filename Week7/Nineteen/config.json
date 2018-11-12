@@ -1,0 +1,4 @@
+{
+    "words": "./plugins/words1.js",
+    "frequencies": "./plugins/frequencies1.js"
+}
