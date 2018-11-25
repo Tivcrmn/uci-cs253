@@ -53,23 +53,39 @@ function split_words(data_str) {
     return result
 }
 
-function regroup(pairs_list) {
+function reflect(c) {
     // a-e, f-j, k-o, p-t, u-z
-    let mapping = new Map()
+    if (c >= 'a' && c <= 'e') return 0
+    else if (c >= 'f' && c <= 'j') return 1
+    else if (c >= 'k' && c <= 'o') return 2
+    else if (c >= 'p' && c <= 't') return 3
+    else if (c >= 'u' && c <= 'z') return 4
+    else {}
+}
+
+function regroup(pairs_list) {
+    let mapping_list = []
     for (let pairs of pairs_list) {
         for (let p of pairs) {
-            if (mapping.has(p[0])) {
-                mapping.get(p[0]).push(p)
+            let index = reflect(p[0].charAt(0))
+            if (!mapping_list[index]) mapping_list[index] = new Map()
+            let map = mapping_list[index]
+            if (map.has(p[0])) {
+                map.get(p[0]).push(p)
             } else {
-                mapping.set(p[0], [p])
+                map.set(p[0], [p])
             }
         }
     }
-    let trans_map = []
-    for (let [key, value] of mapping) {
-        trans_map.push([key, value])
+    let trans_map_list = []
+    for (let map of mapping_list) {
+        let trans_map = []
+        for (let [key, value] of map) {
+            trans_map.push([key, value])
+        }
+        trans_map_list.push(trans_map)
     }
-    return trans_map
+    return trans_map_list
 }
 
 function count_words(mapping) {
@@ -86,8 +102,15 @@ function read_file(path_to_file) {
 
 // main function
 let splits = partition(read_file(arguments[0]), 200).map(split_words)
-let splits_per_word = regroup(splits)
-let word_freqs = splits_per_word.map(count_words).sort((a, b) => b[1] - a[1])
+let splits_per_word_list = regroup(splits)
+let word_freqs = []
+
+for (let splits_per_word of splits_per_word_list) {
+    // merge
+    word_freqs = word_freqs.concat(splits_per_word.map(count_words))
+}
+
+word_freqs = word_freqs.sort((a, b) => b[1] - a[1])
 
 for (let i = 0; i < 25; i++) {
     console.log(word_freqs[i][0] + "  -  " + word_freqs[i][1])
